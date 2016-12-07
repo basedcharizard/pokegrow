@@ -7,7 +7,7 @@ int main()
 {
 	
 	initscr();
-	cbreak(); noecho(); curs_set(0);
+	cbreak(); curs_set(0);
 	Display *display = new Display;
 	
 	Pokemon garchomp;
@@ -15,7 +15,7 @@ int main()
 	garchomp.setEV(DEF,4);
 	garchomp.setEV(SPE,252);
 
-	display->edit(garchomp);
+	display->edit(&garchomp);
 
 	delete display;
 	endwin();

@@ -1,4 +1,5 @@
 #include <cstring>
+#include <string>
 #include "display.h"
 
 Display::Display() 
@@ -7,17 +8,16 @@ Display::Display()
 
 	title_win = new_window(3, 14, 0, 0, true);
 	header_win = new_window(3, width-15, 0, 15, true);
-	for (int i=0;i<8;i++) {
+	for (int i=0;i<7;i++) {
 		slot[i] = new_window(3, width, (i*3), 0, true);
 	}
-	msg_win = new_window(height, width, 0, 0, false);
+	msg_win = new_window(3, width, 23, 0, false);
 	//////// commands
 	// TODO: implement command system
 	// 		 wgetch a command string, then parse
 	// 		 m i 3 31 // modify IV for def to 31
 	// 		 m a 2 252// modify EV for att to 252
 	// 		 u // re-calc final stats
-	};
 }
 
 Display::~Display()
@@ -90,27 +90,43 @@ string Display::formatStats(enum stat_t f, int *stats)
 	return rv;
 }
 
-void Display::paint(Pokemon p) 
+void Display::paint() 
 {
-	setTitle(p.name);
-	writeToSlot(1,formatStats(FINAL, p.getFinalStat()));
-	writeToSlot(2,formatStats(EV, p.getEV()));
-	writeToSlot(3,formatStats(IV, p.getIV()));
-	writeToSlot(4,formatStats(BASE, p.getBaseStat()));
+	setTitle(target->name);
+	writeToSlot(1,formatStats(FINAL, target->getFinalStat()));
+	writeToSlot(2,formatStats(EV, target->getEV()));
+	writeToSlot(3,formatStats(IV, target->getIV()));
+	writeToSlot(4,formatStats(BASE, target->getBaseStat()));
 }
 
-void Display::edit(Pokemon p)
+void Display::paint(enum stat_t f)
+{
+	//TODO do legality checks here
+	switch(f) {
+		case BASE:
+			writeToSlot(4,formatStats(BASE, target->getBaseStat()));
+			break;
+		case IV:
+			writeToSlot(3,formatStats(IV, target->getIV()));
+			break;
+		case EV:
+			writeToSlot(2,formatStats(EV, target->getEV()));
+			break;
+		case FINAL:
+			writeToSlot(1,formatStats(FINAL, target->getFinalStat()));
+			break;
+	}
+}
+
+void Display::edit(Pokemon *p)
 {
 	bool editing = true;
-	char cmd = '\0';
-	paint(p);
+	char str[10];
+	target = p;
+	paint();
 	while (editing) {
-		cmd = wgetch();	
-		if (commands[cmd]) {
-			commands[cmd].run();
-		} else if (cmd == 'q') {
-			editing = false;
-		}
+		mvwgetstr(msg_win, 0, 0, str);
+		editing = parseCommand(str);
 	}
 }
 
@@ -121,8 +137,54 @@ void Display::wait()
 
 
 
+bool Display::parseCommand(char *s) {
+	int i=0;
+	bool rv = true;
+	char temp[3];
+	memset(temp,'\0',3);
+	string temp2;
+	stat selected;
+	switch(s[0]) {
+		case 'm': // modify
+			switch(s[2]) {
+				case '1':
+					selected = HP;
+					break;
+				case '2':
+					selected = ATT;
+					break;
+				case '3':
+					selected = DEF;
+					break;
+				case '4':
+					selected = SPA;
+					break;
+				case '5':
+					selected = SPD;
+					break;
+				case '6':
+					selected = SPE;
+					break;
+			}
+			while(s[3+i] != '\0') {temp[i] = s[3+i]; i++;}
+			temp2 = temp;
+			if (s[1] == 'i') {
+				target->setIV(selected,std::stoi(temp2));
+				paint(IV);paint(FINAL);
+			} else if (s[1] == 'e') {
+				target->setEV(selected,std::stoi(temp2));
+				paint(EV);paint(FINAL);
+			}
+			break;
+		case 'q':
+			rv = false;
+			break;
+		default: // eventually, print error msg
+			break;
+	}	
 
-
+	return rv;
+}
 
 
 
@@ -130,6 +192,7 @@ WINDOW *new_window(int h, int w, int starty, int startx, bool border)
 {
 	WINDOW *localwin;
 	localwin = newwin(h,w,starty, startx);
+	if (border) box(localwin, 0, 0);
 	wrefresh(localwin);
 	return localwin;
 }

@@ -10,7 +10,7 @@ void destroy_window(WINDOW *w);
 
 
 enum stat_t {
-	BASE, IV, EV, FINAL
+	FINAL, EV, IV, BASE
 };
 
 
@@ -23,27 +23,25 @@ class Display {
 	WINDOW *slot[7];
 	WINDOW *msg_win;
 
+	Pokemon *target;
+
 	void setTitle(string title);
 	void writeToSlot(int index,string text);
 	string formatStats(enum stat_t f, int hp, int att, int def, int spa, int spd, int spe);
 	string formatStats(enum stat_t f, int* stats);
 
-	void paint(Pokemon p);
+	void paint();
+	void paint(enum stat_t f);
+
+	bool parseCommand(char *s);
 
 	public:
 	Display();
 	~Display();
-	void edit(Pokemon p);
+	void edit(Pokemon *p);
 	void sendMsg(string msg);
 	void wait();
 };
 
-class Command {
-	public:
-	char key;
-	void run();
-}
-
-Command commands[3];
 
 #endif
