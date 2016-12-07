@@ -57,7 +57,7 @@ int Pokemon::getFinalStat(stat s) {calcFinalStat(level); return final_stats[s];}
 int *Pokemon::calcFinalStat(int level) {
 	for (int i=0; i<6; i++) {
 		if (i==0) {
-			final_stats[i] = 69;	
+			final_stats[i] = (((2*base_stats[i]+initial_values[i]+(effort_values[i]/4))*level)/100)+level+10;
 		} else {
 			final_stats[i] = (((2*base_stats[i]+initial_values[i]+(effort_values[i]/4))*level)/100)+5;
 		}		

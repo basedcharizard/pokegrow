@@ -69,7 +69,7 @@ string Display::formatStats(enum stat_t f, int *stats)
 			break;
 	}	
 
-	for (i=i;i<44;i++) {str[i] = ' ';}
+	for (i;i<44;i++) {str[i] = ' ';}
 
 	string rv = str;
 

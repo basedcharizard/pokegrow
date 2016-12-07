@@ -11,9 +11,9 @@ int main()
 	Display *display = new Display;
 	
 	Pokemon garchomp;
-	garchomp.setLevel(100);
-	garchomp.setIV(ATT,31);
 	garchomp.setEV(ATT,252);
+	garchomp.setEV(DEF,4);
+	garchomp.setEV(SPE,252);
 
 	display->edit(garchomp);
 	display->wait();
