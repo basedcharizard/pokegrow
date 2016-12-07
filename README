@@ -1,4 +1,18 @@
-This is a tool for planning competitive pokemon sets written in c++ and using
-ncurses. It allows you to
-calculate the individual statistics of pokemon under item and nature
-modifiers. It's a work in progress. 
+This is a tool for planning competitive pokemon sets written in c++ and using ncurses. It allows you to calculate the individual statistics of pokemon under item and nature modifiers. It's a work in progress.
+
+#########
+COMMANDS#
+#########
+
+To use the program you pass command strings, for example "mi131" or "me2252". You begin the command string with a command, and append it's arguments sans spaces.
+
+q <quit>
+
+m <modify the>
+  + i <IV of the stat>
+    + 1-6 <1=hp,2=att,6=hp>
+	  + 0-31 <to this value>
+
+  + e EV of the stat
+    + 1-6 (1=hp,2=att,6=hp)
+	  + 0-252 <to this value>
