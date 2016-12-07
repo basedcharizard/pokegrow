@@ -1,1 +1,4 @@
-This is a tool for planning competitive pokemon sets.
+This is a tool for planning competitive pokemon sets written in c++ and using
+ncurses. It allows you to
+calculate the individual statistics of pokemon under item and nature
+modifiers. It's a work in progress. 
