@@ -10,7 +10,14 @@ Display::Display()
 	for (int i=0;i<8;i++) {
 		slot[i] = new_window(3, width, (i*3), 0, true);
 	}
-	err_win = new_window(height, width, 0, 0, false);
+	msg_win = new_window(height, width, 0, 0, false);
+	//////// commands
+	// TODO: implement command system
+	// 		 wgetch a command string, then parse
+	// 		 m i 3 31 // modify IV for def to 31
+	// 		 m a 2 252// modify EV for att to 252
+	// 		 u // re-calc final stats
+	};
 }
 
 Display::~Display()
@@ -20,7 +27,7 @@ Display::~Display()
 	for (int i=0;i<7;i++) {
 		destroy_window(slot[i]);
 	}
-	destroy_window(err_win);
+	destroy_window(msg_win);
 }
 
 void Display::setTitle(string title)
@@ -49,7 +56,7 @@ string Display::formatStats(enum stat_t f, int *stats)
 	char base[] = "Base Stats:"; // 11
 	char iv[] = "Initial Values:"; // 15
 	char ev[] = "Effort Values:"; // 14
-	char calcd[] = "Final Stats:"; // 15
+	char calcd[] = "Final Stats:"; // 12 
 	string temp;
 	string spaces = "   ";
 
@@ -65,7 +72,7 @@ string Display::formatStats(enum stat_t f, int *stats)
 			for (i=0;i<14;i++) {str[i] = ev[i];}
 			break;
 		case FINAL:
-			for (i=0;i<15;i++) {str[i] = calcd[i];}
+			for (i=0;i<12;i++) {str[i] = calcd[i];}
 			break;
 	}	
 
@@ -83,19 +90,41 @@ string Display::formatStats(enum stat_t f, int *stats)
 	return rv;
 }
 
-void Display::edit(Pokemon p)
+void Display::paint(Pokemon p) 
 {
 	setTitle(p.name);
-	writeToSlot(1,formatStats(BASE, p.getBaseStat()));
-	writeToSlot(2,formatStats(IV, p.getIV()));
-	writeToSlot(3,formatStats(EV, p.getEV()));
-	writeToSlot(4,formatStats(FINAL, p.getFinalStat()));
+	writeToSlot(1,formatStats(FINAL, p.getFinalStat()));
+	writeToSlot(2,formatStats(EV, p.getEV()));
+	writeToSlot(3,formatStats(IV, p.getIV()));
+	writeToSlot(4,formatStats(BASE, p.getBaseStat()));
+}
+
+void Display::edit(Pokemon p)
+{
+	bool editing = true;
+	char cmd = '\0';
+	paint(p);
+	while (editing) {
+		cmd = wgetch();	
+		if (commands[cmd]) {
+			commands[cmd].run();
+		} else if (cmd == 'q') {
+			editing = false;
+		}
+	}
 }
 
 void Display::wait() 
 {
 	wgetch(title_win);
 }
+
+
+
+
+
+
+
 
 WINDOW *new_window(int h, int w, int starty, int startx, bool border)
 {
