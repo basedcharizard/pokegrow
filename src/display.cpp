@@ -7,9 +7,9 @@ Display::Display()
 	getmaxyx(stdscr,height,width);
 
 	title_win = new_window(3, 14, 0, 0, true);
-	header_win = new_window(3, width-15, 0, 15, true);
-	for (int i=0;i<7;i++) {
-		slot[i] = new_window(3, width, (i*3), 0, true);
+	header_win = new_window(3, 65, 0, 15, true);
+	for (int i=0;i<6;i++) {
+		slot[i] = new_window(3, width, (3+(i*3)), 0, true);
 	}
 	msg_win = new_window(3, width, 23, 0, false);
 	//////// commands
@@ -24,7 +24,7 @@ Display::~Display()
 {
 	destroy_window(title_win);
 	destroy_window(header_win);
-	for (int i=0;i<7;i++) {
+	for (int i=0;i<6;i++) {
 		destroy_window(slot[i]);
 	}
 	destroy_window(msg_win);
@@ -33,9 +33,7 @@ Display::~Display()
 void Display::setTitle(string title)
 {
 	mvwprintw(title_win,1,1,title.c_str());
-	mvwprintw(header_win, 1, (width-15)-35, " HP   ATT   DEF   SPD   SPA   SPE");
-	box(title_win,0,0);
-	box(header_win,0,0);
+	//mvwprintw(header_win, 1, (width-15)-35, " HP   ATT   DEF   SPA   SPD   SPE");
 	wrefresh(header_win);
 	wrefresh(title_win);
 }
@@ -45,6 +43,25 @@ void Display::writeToSlot(int index, string text)
 	mvwprintw(slot[index], 1, 1, text.c_str());
 	box(slot[index],0,0);
 	wrefresh(slot[index]);
+}
+
+string Display::formatStats(Nature *n)
+{
+	int i;
+	int j;
+	string str = "Nature: ";
+	string spaces = "   ";
+
+	str = str + n->name;
+	for (i=str.length();i<80-30;i++) {str = str + " ";}
+
+	for (j=0;j<5;j++) {
+		if (n->modifiers[j] == (float)1.1) {str = str + " + " + spaces;}
+		else if (n->modifiers[j] == (float)0.9) {str = str + " - " + spaces;}
+		else {str = str + spaces + spaces;}
+	}
+
+	return str;
 }
 
 string Display::formatStats(enum stat_t f, int *stats)
@@ -93,6 +110,10 @@ string Display::formatStats(enum stat_t f, int *stats)
 void Display::paint() 
 {
 	setTitle(target->name);
+	mvwprintw(header_win, 1, 1,"Held Item: Choice Scarf");
+	mvwprintw(header_win, 1, (width-15)-35, " HP   ATT   DEF   SPA   SPD   SPE");
+	wrefresh(header_win);
+	writeToSlot(0,formatStats(target->getNatureObj()));
 	writeToSlot(1,formatStats(FINAL, target->getFinalStat()));
 	writeToSlot(2,formatStats(EV, target->getEV()));
 	writeToSlot(3,formatStats(IV, target->getIV()));
@@ -130,13 +151,6 @@ void Display::edit(Pokemon *p)
 	}
 }
 
-void Display::wait() 
-{
-	wgetch(title_win);
-}
-
-
-
 bool Display::parseCommand(char *s) {
 	int i=0;
 	bool rv = true;
@@ -145,6 +159,12 @@ bool Display::parseCommand(char *s) {
 	string temp2;
 	stat selected;
 	switch(s[0]) {
+		case 'l': // set level
+			while(s[1+i] != '\0') {temp[i] = s[1+i]; i++;}
+			temp2 = temp;
+			target->setLevel(std::stoi(temp2));
+			paint(FINAL);
+			break;
 		case 'm': // modify
 			switch(s[2]) {
 				case '1':
@@ -176,16 +196,23 @@ bool Display::parseCommand(char *s) {
 				paint(EV);paint(FINAL);
 			}
 			break;
+		case 'u':
+			paint();
+			break;
 		case 'q':
 			rv = false;
 			break;
 		default: // eventually, print error msg
 			break;
 	}	
-
+	wclear(msg_win); wrefresh(msg_win);
 	return rv;
 }
 
+void Display::wait() 
+{
+	wgetch(title_win);
+}
 
 
 WINDOW *new_window(int h, int w, int starty, int startx, bool border)

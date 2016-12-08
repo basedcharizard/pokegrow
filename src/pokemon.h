@@ -4,11 +4,21 @@
 using namespace std;
 
 typedef enum {
-	HP, ATT, DEF, SPD, SPA, SPE
+	HP, ATT, DEF, SPA, SPD, SPE
 } stat;
+
+class Nature {
+	public:
+	string name;
+	float modifiers[5]; // store modifiers here, in enum stat order
+	Nature(string n);
+	Nature(string n, float att, float def, float spa, float spd, float spe);	
+	Nature(string n, stat inc, stat dec);
+};
 
 class Pokemon {
 	int level;
+	Nature *nature;
 	int base_stats[6];
 	int initial_values[6];
 	int effort_values[6];
@@ -20,7 +30,10 @@ class Pokemon {
 	public:
 	string name;	
 
-	Pokemon();
+	Pokemon(Nature *n);
+	string getNatureString();
+	Nature *getNatureObj();
+
 	void setLevel(int lvl);
 	int getLevel();
 

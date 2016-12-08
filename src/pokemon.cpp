@@ -1,8 +1,36 @@
 #include "pokemon.h"
 
-Pokemon::Pokemon() {
+Nature::Nature(string n) {
+	name = n;
+	modifiers[0] = 1;
+	modifiers[1] = 1;
+	modifiers[2] = 1;
+	modifiers[3] = 1;
+	modifiers[4] = 1;
+}
+
+Nature::Nature(string n, float att, float def, float spa, float spd, float spe) {
+	name = n;
+	modifiers[0] = att;
+	modifiers[1] = def;
+	modifiers[2] = spa;
+	modifiers[3] = spd;
+	modifiers[4] = spe;
+}
+
+Nature::Nature(string n, stat inc, stat dec) {
+	name = n;
+	for (int i=0;i<5;i++) {
+		if (inc == (i+1)) {modifiers[i] = 1.1;}
+		else if (dec == (i+1)) {modifiers[i] = 0.9;}
+		else {modifiers[i] = 1;}
+	}
+}
+
+Pokemon::Pokemon(Nature *n) {
 	name = "Garchomp";
 	level = 100;
+	nature = n;
 	base_stats[HP] = 108;
 	base_stats[ATT] = 130;
 	base_stats[DEF] = 95;
@@ -32,6 +60,8 @@ Pokemon::Pokemon() {
 	final_stats[SPE] = 0;
 }
 
+string Pokemon::getNatureString(){return nature->name;}
+Nature *Pokemon::getNatureObj(){return nature;}
 void Pokemon::setLevel(int lvl) {level = lvl;}
 int Pokemon::getLevel() {return level;}
 
@@ -59,7 +89,7 @@ int *Pokemon::calcFinalStat(int level) {
 		if (i==0) {
 			final_stats[i] = (((2*base_stats[i]+initial_values[i]+(effort_values[i]/4))*level)/100)+level+10;
 		} else {
-			final_stats[i] = (((2*base_stats[i]+initial_values[i]+(effort_values[i]/4))*level)/100)+5;
+			final_stats[i] = ((((2*base_stats[i]+initial_values[i]+(effort_values[i]/4))*level)/100)+5)*nature->modifiers[i-1];
 		}		
 	}
 	return final_stats;

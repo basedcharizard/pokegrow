@@ -10,7 +10,7 @@ void destroy_window(WINDOW *w);
 
 
 enum stat_t {
-	FINAL, EV, IV, BASE
+	FINAL, EV, IV, BASE, NATURE
 };
 
 
@@ -27,7 +27,7 @@ class Display {
 
 	void setTitle(string title);
 	void writeToSlot(int index,string text);
-	string formatStats(enum stat_t f, int hp, int att, int def, int spa, int spd, int spe);
+	string formatStats(Nature *n);
 	string formatStats(enum stat_t f, int* stats);
 
 	void paint();
