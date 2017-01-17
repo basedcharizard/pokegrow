@@ -31,6 +31,7 @@ class Pokemon {
 	string name;	
 
 	Pokemon(Nature *n);
+	Pokemon(string *s);
 	string getNatureString();
 	Nature *getNatureObj();
 

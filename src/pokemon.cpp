@@ -1,6 +1,8 @@
+#include <iostream>
 #include "pokemon.h"
 
-Nature::Nature(string n) {
+Nature::Nature(string n) 
+{
 	name = n;
 	modifiers[0] = 1;
 	modifiers[1] = 1;
@@ -9,7 +11,8 @@ Nature::Nature(string n) {
 	modifiers[4] = 1;
 }
 
-Nature::Nature(string n, float att, float def, float spa, float spd, float spe) {
+Nature::Nature(string n, float att, float def, float spa, float spd, float spe) 
+{
 	name = n;
 	modifiers[0] = att;
 	modifiers[1] = def;
@@ -18,7 +21,8 @@ Nature::Nature(string n, float att, float def, float spa, float spd, float spe) 
 	modifiers[4] = spe;
 }
 
-Nature::Nature(string n, stat inc, stat dec) {
+Nature::Nature(string n, stat inc, stat dec) 
+{
 	name = n;
 	for (int i=0;i<5;i++) {
 		if (inc == (i+1)) {modifiers[i] = 1.1;}
@@ -27,7 +31,8 @@ Nature::Nature(string n, stat inc, stat dec) {
 	}
 }
 
-Pokemon::Pokemon(Nature *n) {
+Pokemon::Pokemon(Nature *n) 
+{
 	name = "Garchomp";
 	level = 100;
 	nature = n;
@@ -58,6 +63,11 @@ Pokemon::Pokemon(Nature *n) {
 	final_stats[SPA] = 0;
 	final_stats[SPD] = 0;
 	final_stats[SPE] = 0;
+}
+
+Pokemon::Pokemon(string s) 
+{
+
 }
 
 string Pokemon::getNatureString(){return nature->name;}

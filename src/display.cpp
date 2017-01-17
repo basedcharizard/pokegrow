@@ -157,7 +157,7 @@ bool Display::parseCommand(char *s) {
 	char temp[3];
 	memset(temp,'\0',3);
 	string temp2;
-	stat selected;
+	stat selected = HP;
 	switch(s[0]) {
 		case 'l': // set level
 			while(s[1+i] != '\0') {temp[i] = s[1+i]; i++;}
@@ -184,6 +184,9 @@ bool Display::parseCommand(char *s) {
 					break;
 				case '6':
 					selected = SPE;
+					break;
+				default:
+					// print error msg
 					break;
 			}
 			while(s[3+i] != '\0') {temp[i] = s[3+i]; i++;}
